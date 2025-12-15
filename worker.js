@@ -1,27 +1,27 @@
 // =================================================================================
 //  項目: Flux AI Pro - 專業級 AI 圖像生成服務
-//  版本: 9.4.0-enhanced
+//  版本: 10.4.3-stable
 //  作者: Enhanced by AI Assistant  
 //  日期: 2025-12-15
 //  
 //  🎯 核心功能:
-//  • 15+ AI 模型 (Flux 系列 + Stable Diffusion + ZImage)
-//  • 批量生成 (1-4張) | 精確 Seed 控制 | 圖生圖/多圖融合
-//  • 39種藝術風格 | 35+尺寸預設 | 4K超高清支持
+//  • 4個精選 AI 模型 (基於 Pollinations API 實際可用模型)
+//  • 批量生成 (1-4張) | 精確 Seed 控制 | 智能優化
+//  • 39種藝術風格 | 12種實用尺寸預設 | 4K超高清支持
 //  • 中文智能翻譯 (m2m100) | 參數自動優化 | HD 增強
 //  
 //  🚀 技術特性:
-//  • 最新 Pollinations API (gen.pollinations.ai)
+//  • 最新 Pollinations API (gen.pollinations.ai/image)
 //  • 智能速率限制 + LRU 緩存 + 性能監控
 //  • 多重重試機制 + 模型回退 + 詳細日誌
 //  • Cloudflare Worker 優化 + 全球 CDN 加速
 //  
-//  🎨 支持模型: Flux Pro/Realism/Anime/3D, SD3.5, SDXL, ZImage, Kontext
+//  🎨 支持模型: Flux, Turbo, Kontext, Z-Image
 // =================================================================================
 
 const CONFIG = {
     PROJECT_NAME: "Flux-AI-Pro",
-    PROJECT_VERSION: "9.4.0-enhanced",
+    PROJECT_VERSION: "10.4.3-stable",
     API_MASTER_KEY: "1",
     
     PROVIDERS: {
@@ -30,10 +30,10 @@ const CONFIG = {
         endpoint: "https://gen.pollinations.ai",
         type: "direct",
         auth_mode: "bearer",
-        requires_key: true,
+        requires_key: false,
         enabled: true,
         default: true,
-        description: "Pollinations AI 圖像生成服務 (需要 API Key)",
+        description: "Pollinations AI 圖像生成服務",
         features: {
           private_mode: true,
           custom_size: true,
@@ -46,28 +46,18 @@ const CONFIG = {
           quality_modes: true,
           auto_translate: true,
           ultra_hd_4k: true,
-          reference_images: true,
-          image_to_image: true,
-          multi_image_fusion: true,
           batch_generation: true
         },
         models: [
-          { id: "flux", name: "Flux", confirmed: true, category: "flux", description: "均衡速度與質量", max_size: 2048 },
-          { id: "flux-realism", name: "Flux Realism", confirmed: true, category: "flux", description: "超寫實風格", max_size: 2048 },
-          { id: "flux-anime", name: "Flux Anime", confirmed: true, category: "flux", description: "日系動漫風格", max_size: 2048 },
-          { id: "flux-3d", name: "Flux 3D", confirmed: true, category: "flux", description: "3D 渲染風格", max_size: 2048 },
-          { id: "flux-pro", name: "Flux Pro", confirmed: true, category: "flux", description: "專業版最高質量", max_size: 2048 },
-          { id: "any-dark", name: "Any Dark", confirmed: true, category: "flux", description: "暗黑風格", max_size: 2048 },
-          { id: "turbo", name: "Turbo", confirmed: true, category: "flux", description: "極速生成", max_size: 2048 },
-          { id: "flux-1.1-pro", name: "Flux 1.1 Pro 🔥", confirmed: false, fallback: ["flux-pro", "flux-realism"], experimental: true, category: "flux-advanced", description: "最新 Flux 1.1", max_size: 2048 },
-          { id: "flux-kontext", name: "Flux Kontext 🎨", confirmed: false, fallback: ["flux-pro", "flux-realism"], experimental: true, category: "flux-advanced", description: "圖像編輯 (1張參考圖)", max_size: 2048, supports_reference_images: true, max_reference_images: 1 },
-          { id: "flux-kontext-pro", name: "Flux Kontext Pro 💎", confirmed: false, fallback: ["flux-kontext", "flux-pro"], experimental: true, category: "flux-advanced", description: "圖像編輯專業版 (1張參考圖)", max_size: 2048, supports_reference_images: true, max_reference_images: 1 },
-          { id: "zimage", name: "ZImage 🎯", confirmed: true, category: "zimage", description: "高質量圖像生成", max_size: 2048 },
-          { id: "sd3", name: "Stable Diffusion 3 ⚡", confirmed: false, fallback: ["flux-realism", "flux"], experimental: true, category: "stable-diffusion", description: "SD3 標準版", max_size: 2048 },
-          { id: "sd3.5-large", name: "SD 3.5 Large 🔥", confirmed: false, fallback: ["sd3", "flux-realism"], experimental: true, category: "stable-diffusion", description: "SD 3.5 大模型", max_size: 2048 },
-          { id: "sd3.5-turbo", name: "SD 3.5 Turbo ⚡", confirmed: false, fallback: ["turbo", "flux"], experimental: true, category: "stable-diffusion", description: "SD 3.5 快速版", max_size: 2048 },
-          { id: "sdxl", name: "SDXL 📐", confirmed: false, fallback: ["flux-realism", "flux"], experimental: true, category: "stable-diffusion", description: "經典 SDXL", max_size: 2048 },
-          { id: "sdxl-lightning", name: "SDXL Lightning ⚡", confirmed: false, fallback: ["turbo", "flux"], experimental: true, category: "stable-diffusion", description: "SDXL 極速版", max_size: 2048 }
+          // Flux 系列 - 基於 API 實際可用模型
+          { id: "flux", name: "Flux", confirmed: true, category: "flux", description: "快速高質量圖像生成", max_size: 2048, pricing: 0.00012 },
+          { id: "turbo", name: "Turbo", confirmed: true, category: "flux", description: "超快速圖像生成", max_size: 2048, pricing: 0.0003 },
+          
+          // Kontext 系列 - 上下文感知圖像生成
+          { id: "kontext", name: "Kontext 🎨", confirmed: true, category: "kontext", description: "上下文感知圖像生成", max_size: 2048, pricing: 0.04, input_modalities: ["text", "image"] },
+          
+          // ZImage 系列 - 快速 6B 參數模型
+          { id: "zimage", name: "Z-Image Turbo 🎯", confirmed: true, category: "zimage", description: "快速 6B 參數圖像生成 (Alpha)", max_size: 2048, pricing: 0.0002, aliases: ["z-image", "z-image-turbo"] }
         ],
         rate_limit: null,
         max_size: { width: 4096, height: 4096 }
@@ -120,22 +110,15 @@ const CONFIG = {
     
     OPTIMIZATION_RULES: {
       MODEL_STEPS: {
-        "turbo": { min: 4, optimal: 8, max: 12 },
-        "sdxl-lightning": { min: 4, optimal: 6, max: 10 },
-        "sd3.5-turbo": { min: 8, optimal: 12, max: 20 },
+        // Flux 系列
         "flux": { min: 15, optimal: 20, max: 30 },
-        "flux-anime": { min: 15, optimal: 20, max: 30 },
-        "flux-3d": { min: 15, optimal: 22, max: 35 },
-        "sd3": { min: 18, optimal: 25, max: 35 },
-        "sdxl": { min: 20, optimal: 28, max: 40 },
-        "flux-realism": { min: 20, optimal: 28, max: 40 },
-        "flux-pro": { min: 25, optimal: 32, max: 45 },
-        "flux-1.1-pro": { min: 20, optimal: 28, max: 40 },
-        "sd3.5-large": { min: 25, optimal: 35, max: 50 },
-        "flux-kontext": { min: 22, optimal: 30, max: 40 },
-        "flux-kontext-pro": { min: 25, optimal: 35, max: 45 },
-        "any-dark": { min: 18, optimal: 24, max: 35 },
-        "zimage": { min: 20, optimal: 25, max: 35 }
+        "turbo": { min: 4, optimal: 8, max: 12 },
+        
+        // Kontext 系列
+        "kontext": { min: 20, optimal: 28, max: 40 },
+        
+        // ZImage 系列
+        "zimage": { min: 15, optimal: 20, max: 30 }
       },
       SIZE_MULTIPLIER: {
         small: { threshold: 512 * 512, multiplier: 0.8 },
@@ -169,18 +152,15 @@ const CONFIG = {
       },
       HD_NEGATIVE: "low quality, blurry, pixelated, low resolution, jpeg artifacts, compression artifacts, bad quality, distorted, noisy, grainy, poor details, soft focus, out of focus",
       MODEL_QUALITY_PROFILES: {
-        "flux-realism": { priority: "ultra_detail", min_resolution: 1536, max_resolution: 2048, optimal_steps_boost: 1.25, guidance_boost: 1.15, recommended_quality: "ultra" },
-        "flux-pro": { priority: "maximum_quality", min_resolution: 1536, max_resolution: 2048, optimal_steps_boost: 1.3, guidance_boost: 1.2, recommended_quality: "ultra" },
-        "flux-1.1-pro": { priority: "maximum_quality", min_resolution: 1536, max_resolution: 2048, optimal_steps_boost: 1.25, guidance_boost: 1.15, recommended_quality: "ultra" },
-        "sd3.5-large": { priority: "high_detail", min_resolution: 1280, max_resolution: 2048, optimal_steps_boost: 1.2, guidance_boost: 1.1, recommended_quality: "standard" },
-        "flux-anime": { priority: "clarity", min_resolution: 1280, max_resolution: 2048, optimal_steps_boost: 1.15, guidance_boost: 1.1, recommended_quality: "standard" },
-        "flux-3d": { priority: "detail", min_resolution: 1280, max_resolution: 2048, optimal_steps_boost: 1.2, guidance_boost: 1.1, recommended_quality: "standard" },
-        "flux-kontext": { priority: "image_edit", min_resolution: 1280, max_resolution: 2048, optimal_steps_boost: 1.2, guidance_boost: 1.1, recommended_quality: "standard" },
-        "flux-kontext-pro": { priority: "image_edit_pro", min_resolution: 1536, max_resolution: 2048, optimal_steps_boost: 1.3, guidance_boost: 1.15, recommended_quality: "ultra" },
-        "zimage": { priority: "high_quality", min_resolution: 1280, max_resolution: 2048, optimal_steps_boost: 1.2, guidance_boost: 1.1, recommended_quality: "standard" },
+        // Flux 系列
+        "flux": { priority: "balanced", min_resolution: 1280, max_resolution: 2048, optimal_steps_boost: 1.0, guidance_boost: 1.0, recommended_quality: "standard" },
         "turbo": { priority: "speed", min_resolution: 1024, max_resolution: 2048, optimal_steps_boost: 0.7, guidance_boost: 0.85, recommended_quality: "economy" },
-        "sdxl-lightning": { priority: "speed", min_resolution: 1024, max_resolution: 2048, optimal_steps_boost: 0.6, guidance_boost: 0.8, recommended_quality: "economy" },
-        "sd3.5-turbo": { priority: "balanced_speed", min_resolution: 1024, max_resolution: 2048, optimal_steps_boost: 0.8, guidance_boost: 0.9, recommended_quality: "economy" }
+        
+        // Kontext 系列
+        "kontext": { priority: "context_aware", min_resolution: 1280, max_resolution: 2048, optimal_steps_boost: 1.2, guidance_boost: 1.1, recommended_quality: "standard" },
+        
+        // ZImage 系列
+        "zimage": { priority: "fast_quality", min_resolution: 1280, max_resolution: 2048, optimal_steps_boost: 1.0, guidance_boost: 1.0, recommended_quality: "standard" }
       }
     },
     
@@ -646,39 +626,11 @@ const CONFIG = {
               style = "none", 
               autoOptimize = true, 
               autoHD = true, 
-              qualityMode = 'standard',
-              referenceImages = []
+              qualityMode = 'standard'
           } = options;
           
           const modelConfig = this.config.models.find(m => m.id === model);
-          const supportsRefImages = modelConfig?.supports_reference_images || false;
-          const maxRefImages = modelConfig?.max_reference_images || 0;
           const is4KModel = modelConfig?.max_size === 4096;
-          
-          let validReferenceImages = [];
-          if (referenceImages && referenceImages.length > 0) {
-              if (!supportsRefImages) {
-                  logger.add("⚠️ Reference Images", { 
-                      warning: model + " 不支持參考圖,已忽略", 
-                      supported_models: ["kontext", "kontext-pro"] 
-                  });
-              } else if (referenceImages.length > maxRefImages) {
-                  logger.add("⚠️ Reference Images", { 
-                      warning: model + " 最多支持 " + maxRefImages + " 張參考圖", 
-                      provided: referenceImages.length, 
-                      using: maxRefImages 
-                  });
-                  validReferenceImages = referenceImages.slice(0, maxRefImages);
-              } else {
-                  validReferenceImages = referenceImages;
-                  logger.add("🖼️ Reference Images", { 
-                      model: model, 
-                      count: validReferenceImages.length, 
-                      max_allowed: maxRefImages,
-                      mode: validReferenceImages.length === 1 ? "圖生圖" : "多圖融合"
-                  });
-              }
-          }
           
           let hdOptimization = null;
           let finalPrompt = prompt;
@@ -692,8 +644,7 @@ const CONFIG = {
               complexity: (promptComplexity * 100).toFixed(1) + '%', 
               recommended_quality: recommendedQuality, 
               selected_quality: qualityMode,
-              is_4k_model: is4KModel,
-              has_reference_images: validReferenceImages.length > 0
+              is_4k_model: is4KModel
           });
           
           if (autoHD) {
@@ -783,8 +734,7 @@ const CONFIG = {
               hd_optimized: autoHD && hdOptimization?.optimized, 
               auto_translated: translation.translated,
               style_applied: style !== 'none',
-              reference_images: validReferenceImages.length,
-              generation_mode: validReferenceImages.length > 0 ? (validReferenceImages.length === 1 ? "圖生圖" : "多圖融合") : "文生圖",
+              generation_mode: "文生圖",
               steps: finalSteps, 
               guidance: finalGuidance,
               seed: seed
@@ -801,10 +751,8 @@ const CONFIG = {
           for (const tryModel of modelsToTry) {
               for (let retry = 0; retry < CONFIG.MAX_RETRIES; retry++) {
                   try {
-                      // 檢查 API Key
-                      if (!this.apiKey) {
-                          throw new Error("POLLINATIONS_API_KEY is required but not configured");
-                      }
+                      // API Key 檢查 - Pollinations 現在不需要 API Key
+                      console.log("🔑 API Key 狀態:", this.apiKey ? "已配置" : "未配置 (使用免費模式)");
                       
                       // 構建 URL 參數
                       const params = new URLSearchParams();
@@ -816,13 +764,7 @@ const CONFIG = {
                       params.append('enhance', enhance.toString());
                       params.append('private', privateMode.toString());
                       
-                      if (validReferenceImages && validReferenceImages.length > 0) {
-                          params.append('image', validReferenceImages.join(','));
-                          logger.add("🖼️ Reference Images Added", { 
-                              count: validReferenceImages.length,
-                              urls: validReferenceImages 
-                          });
-                      }
+
                       
                       if (finalGuidance !== 7.5) params.append('guidance', finalGuidance.toString());
                       if (finalSteps !== 20) params.append('steps', finalSteps.toString());
@@ -842,9 +784,13 @@ const CONFIG = {
                           'Accept': 'image/*,*/*', 
                           'Accept-Encoding': 'gzip, deflate, br', 
                           'Connection': 'keep-alive', 
-                          'Referer': 'https://pollinations.ai/',
-                          'Authorization': 'Bearer ' + this.apiKey
+                          'Referer': 'https://pollinations.ai/'
                       };
+                      
+                      // 只有在有 API Key 時才添加 Authorization 頭
+                      if (this.apiKey) {
+                          headers['Authorization'] = 'Bearer ' + this.apiKey;
+                      }
                       
                       const response = await fetchWithTimeout(url, { 
                           method: 'GET', 
@@ -863,8 +809,7 @@ const CONFIG = {
                                   style_used: style,
                                   hd_optimized: autoHD && hdOptimization?.optimized, 
                                   auto_translated: translation.translated,
-                                  reference_images_used: validReferenceImages.length,
-                                  generation_mode: validReferenceImages.length > 0 ? (validReferenceImages.length === 1 ? "圖生圖" : "多圖融合") : "文生圖",
+                                  generation_mode: "文生圖",
                                   seed: currentSeed 
                               });
                               
@@ -885,9 +830,7 @@ const CONFIG = {
                                   hd_optimized: autoHD && hdOptimization?.optimized, 
                                   hd_details: hdOptimization, 
                                   auto_translated: translation.translated,
-                                  reference_images: validReferenceImages,
-                                  reference_images_count: validReferenceImages.length,
-                                  generation_mode: validReferenceImages.length > 0 ? (validReferenceImages.length === 1 ? "圖生圖" : "多圖融合") : "文生圖",
+                                  generation_mode: "文生圖",
                                   cost: "FREE", 
                                   fallback_used: tryModel !== model, 
                                   auto_optimized: autoOptimize 
@@ -936,10 +879,9 @@ const CONFIG = {
           for (const [key, config] of Object.entries(CONFIG.PROVIDERS)) {
               if (config.enabled) {
                   if (key === 'pollinations') {
-                      // 檢查是否需要 API Key
+                      // API Key 檢查 - 現在是可選的
                       if (config.requires_key && !env?.POLLINATIONS_API_KEY) {
-                          console.warn(`⚠️ ${config.name} requires API key but POLLINATIONS_API_KEY not found in environment`);
-                          continue;
+                          console.log(`ℹ️ ${config.name} 將使用免費模式 (未配置 POLLINATIONS_API_KEY)`);
                       }
                       this.providers[key] = new PollinationsProvider(config, env);
                   }
@@ -1001,17 +943,7 @@ const CONFIG = {
           if (body.width) width = body.width;
           if (body.height) height = body.height;
           
-          let referenceImages = [];
-          if (body.reference_images && Array.isArray(body.reference_images)) {
-              referenceImages = body.reference_images.filter(url => {
-                  try {
-                      new URL(url);
-                      return true;
-                  } catch {
-                      return false;
-                  }
-              });
-          }
+
           
           const seedInput = body.seed !== undefined ? body.seed : -1;
           let seedValue = -1;
@@ -1038,14 +970,13 @@ const CONFIG = {
               style: body.style || "none", 
               autoOptimize: body.auto_optimize !== false, 
               autoHD: body.auto_hd !== false, 
-              qualityMode: body.quality_mode || 'standard',
-              referenceImages: referenceImages
+              qualityMode: body.quality_mode || 'standard'
           };
           
           let cacheKey = null;
           let cachedResult = null;
           
-          if (options.seed !== -1 && referenceImages.length === 0 && options.numOutputs === 1) {
+          if (options.seed !== -1 && options.numOutputs === 1) {
               cacheKey = generateCacheKey(prompt, options);
               cachedResult = apiCache.get(cacheKey);
               
@@ -1080,8 +1011,6 @@ const CONFIG = {
                   is_4k: r.is_4k,
                   style: r.style,
                   quality_mode: r.quality_mode,
-                  reference_images: r.reference_images || [],
-                  reference_images_count: r.reference_images_count || 0,
                   generation_mode: r.generation_mode || "文生圖",
                   cost: r.cost
               }));
@@ -1101,8 +1030,6 @@ const CONFIG = {
                   width: r.width, 
                   height: r.height,
                   is_4k: r.is_4k,
-                  reference_images: r.reference_images || [],
-                  reference_images_count: r.reference_images_count || 0,
                   generation_mode: r.generation_mode || "文生圖",
                   style: r.style, 
                   quality_mode: r.quality_mode, 
@@ -1209,9 +1136,7 @@ const CONFIG = {
                       confirmed: model.confirmed !== false, 
                       experimental: model.experimental === true, 
                       fallback: model.fallback || null,
-                      ultra_hd: model.ultra_hd || false,
-                      supports_reference_images: model.supports_reference_images || false,
-                      max_reference_images: model.max_reference_images || 0
+                      ultra_hd: model.ultra_hd || false
                   });
               }
           }
@@ -1431,18 +1356,24 @@ const CONFIG = {
   .history-btn{background:linear-gradient(135deg,#8b5cf6 0%,#7c3aed 100%);color:#fff;border:none;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.3s;position:relative}
   .history-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(139,92,246,0.4)}
   .history-badge{position:absolute;top:-8px;right:-8px;background:#ef4444;color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0}@media (max-width:768px){.grid{grid-template-columns:1fr}}
+  /* 三欄布局 */
+  .main-layout{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:25px;margin:30px 0;min-height:700px;align-items:start}
+  .left-panel{order:1;display:flex;flex-direction:column;gap:20px}
+  .center-panel{order:2;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;background:rgba(26,26,26,0.95);border-radius:20px;border:1px solid rgba(255,255,255,0.15);padding:30px;backdrop-filter:blur(15px);box-shadow:0 10px 40px rgba(0,0,0,0.4);min-height:600px;overflow-y:auto;}
+  .center-panel.empty{justify-content:center;align-items:center;background:rgba(26,26,26,0.6);border:2px dashed rgba(255,255,255,0.25);overflow:hidden;}
+  .right-panel{order:3;display:flex;flex-direction:column;gap:20px}
+  .center-placeholder{text-align:center;color:#9ca3af;font-size:20px;opacity:0.8}
+  .center-placeholder .icon{font-size:72px;margin-bottom:25px;opacity:0.6}
+  
+  /* 響應式設計 */
+  @media (max-width:1400px){.main-layout{grid-template-columns:350px 1fr 350px;gap:20px}}
+  @media (max-width:1200px){.main-layout{grid-template-columns:320px 1fr 320px;gap:18px}}
+  @media (max-width:1000px){.main-layout{grid-template-columns:1fr;gap:20px}.left-panel{order:1}.right-panel{order:2}.center-panel{order:3;min-height:500px}}
+  @media (max-width:768px){.container{padding:15px}.main-layout{gap:15px}}
+  @media (max-width:480px){.container{padding:10px}.header{flex-direction:column;text-align:center}.main-layout{gap:12px}}
   .box{background:rgba(26,26,26,0.95);padding:24px;border-radius:16px;border:1px solid rgba(255,255,255,0.1)}h3{color:#f59e0b;margin-bottom:18px;font-size:18px;font-weight:700}label{display:block;margin:16px 0 8px 0;color:#e5e7eb;font-weight:600;font-size:13px}
   select,textarea,input{width:100%;padding:12px;margin:0;background:#2a2a2a;border:1px solid #444;color:#fff;border-radius:10px;font-size:14px;font-family:inherit;transition:all 0.3s}select:focus,textarea:focus,input:focus{outline:none;border-color:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,0.15)}textarea{resize:vertical;min-height:90px}
   button{width:100%;padding:16px;background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;margin-top:20px;transition:all 0.3s;box-shadow:0 4px 15px rgba(245,158,11,0.4)}button:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(245,158,11,0.6)}button:disabled{background:#555;cursor:not-allowed;transform:none;box-shadow:none}
-  .ref-img-section{background:rgba(236,72,153,0.1);border:2px dashed #ec4899;padding:15px;border-radius:10px;margin-top:15px}
-  .upload-area{background:rgba(236,72,153,0.05);border:2px dashed #ec4899;border-radius:8px;padding:20px;text-align:center;cursor:pointer;transition:all 0.3s;margin-bottom:10px}
-  .upload-area:hover{background:rgba(236,72,153,0.15);border-color:#f472b6}
-  .upload-area.dragover{background:rgba(236,72,153,0.25);border-color:#f472b6;transform:scale(1.02)}
-  .ref-img-list{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-  .ref-img-item{position:relative;width:80px;height:80px}
-  .ref-img-item img{width:100%;height:100%;object-fit:cover;border-radius:8px;border:2px solid #ec4899}
-  .ref-img-remove{position:absolute;top:-8px;right:-8px;background:#ef4444;color:#fff;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;font-weight:700}
   .spinner{border:3px solid rgba(255,255,255,0.3);border-top:3px solid #ec4899;border-radius:50%;width:30px;height:30px;animation:spin 1s linear infinite;margin:0 auto}
   @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
   .tag-mode{display:inline-block;background:linear-gradient(135deg,#ec4899 0%,#db2777 100%);color:#fff;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;margin-left:6px}
@@ -1466,55 +1397,79 @@ const CONFIG = {
   <div class="container">
   <div class="header">
   <div class="header-left">
-  <h1>🎨 Flux AI Pro<span class="badge">v${CONFIG.PROJECT_VERSION}</span><span class="badge-new">API Key 🔑</span></h1>
-  <p class="subtitle">需要 API Key · 圖生圖 · 多圖融合 · 中文支持 · 4K超清 · 39種風格 · 35+尺寸</p>
+  <h1>🎨 Flux AI Pro<span class="badge">v${CONFIG.PROJECT_VERSION}</span></h1>
+  <p class="subtitle">現代化 UI · 中文支持 · 4K超清 · 精選風格 · 智能優化</p>
   </div>
   <button onclick="toggleHistory()" class="history-btn">📜 歷史<span id="historyBadge" class="history-badge" style="display:none">0</span></button>
   </div>
   
-  <div class="grid">
+  <div class="main-layout">
+  
+  <!-- 左側面板：生成設置 -->
+  <div class="left-panel">
   <div class="box">
   <h3>📝 生成設置</h3>
-  <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);padding:12px;border-radius:8px;margin-bottom:15px;font-size:13px;color:#f59e0b">
-  <strong>🔑 API Key 配置：</strong> 需要在 Cloudflare Worker 環境變數中設置 <code>POLLINATIONS_API_KEY</code><br>
-  <small>最新 API: <code>https://gen.pollinations.ai/image/</code></small>
-  </div>
+  
   <label>提示詞 * <span style="color:#10b981;font-size:11px;font-weight:400">✓ 支持中文 (自動翻譯 m2m100)</span></label>
   <textarea id="prompt" placeholder="描述你想要的圖片... (支持中文輸入,將自動翻譯成英文)"></textarea>
   
   <label>負面提示詞</label>
   <textarea id="negativePrompt" placeholder="low quality, blurry (也支持中文)"></textarea>
   
-  <div class="ref-img-section">
-  <label>🖼️ 參考圖 (圖生圖/多圖融合)</label>
-  <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-  <div style="font-size:40px;margin-bottom:10px">📤</div>
-  <div style="color:#ec4899;font-weight:600;margin-bottom:5px">點擊或拖拽上傳圖片</div>
-  <div style="color:#9ca3af;font-size:12px">支持 JPG, PNG, WebP (最大 10MB)</div>
+  <label>生成數量 <span style="color:#9ca3af;font-size:11px">(一次生成多張)</span></label>
+  <div style="display:flex;gap:10px;align-items:center">
+  <input type="range" id="numImages" min="1" max="4" step="1" value="1" style="flex:1" oninput="updateNumImagesDisplay()">
+  <span id="numImagesValue" style="color:#f59e0b;font-weight:700;font-size:18px;min-width:60px;text-align:center">1 張</span>
   </div>
-  <input type="file" id="fileInput" accept="image/*" multiple style="display:none">
-  <input type="text" id="refImageUrl" placeholder="或輸入圖片 URL 後按 Enter 添加" style="margin-top:10px">
-  <div class="ref-img-list" id="refImageList"></div>
-  <small id="refImageLimit" style="color:#9ca3af;font-size:11px">kontext: 最多1張參考圖</small>
+  <small style="color:#9ca3af;font-size:11px;display:block;margin-top:5px">💡 多張生成使用不同 seed,生成時間會增加</small>
+  
+  <label>隨機種子 (Seed) <span style="color:#9ca3af;font-size:11px">控制圖片隨機性</span></label>
+  <div style="display:flex;gap:8px;align-items:center">
+  <input type="number" id="seedInput" placeholder="留空=隨機" min="0" max="999999" style="flex:1;font-family:monospace">
+  <button type="button" onclick="randomizeSeed()" style="width:auto;padding:10px 16px;margin:0;background:linear-gradient(135deg,#8b5cf6 0%,#7c3aed 100%)">🎲 隨機</button>
   </div>
+  <small style="color:#9ca3af;font-size:11px;display:block;margin-top:5px">💡 固定 seed 可精確復現圖片,留空則每次隨機生成</small>
+  <div id="lastSeedInfo" style="display:none;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);padding:8px;border-radius:6px;margin-top:8px;font-size:12px;color:#10b981"></div>
+  
+  <label>質量模式</label>
+  <select id="qualityMode">
+  <option value="economy">⚡ 經濟</option>
+  <option value="standard" selected>⭐ 標準</option>
+  <option value="ultra">💎 超高清</option>
+  <option value="ultra_4k">🔥 4K超高清</option>
+  </select>
+  
+  <button id="generateBtn" onclick="generate()">🚀 開始生成</button>
+  <button onclick="testImageDisplay()" style="width:100%;margin-top:10px;background:linear-gradient(135deg,#8b5cf6 0%,#7c3aed 100%)">🧪 測試圖片顯示</button>
+  </div>
+  </div>
+  
+  <!-- 中間面板：圖片顯示區域 -->
+  <div class="center-panel empty" id="centerPanel">
+  <div class="center-placeholder">
+  <div class="icon">🎨</div>
+  <div>生成的圖片將在這裡顯示</div>
+  <div style="font-size:14px;margin-top:10px;opacity:0.6">輸入提示詞並點擊生成按鈕開始創作</div>
+  </div>
+  </div>
+  
+  <!-- 右側面板：圖像參數 -->
+  <div class="right-panel">
+  <div class="box">
+  <h3>🎨 圖像參數</h3>
   
   <label>AI 模型</label>
-  <select id="model" onchange="updateRefImageLimit()">
+  <select id="model">
   <optgroup label="⚡ Flux 系列">
-  <option value="flux">Flux (均衡)</option>
-  <option value="flux-realism">Flux Realism (超寫實)</option>
-  <option value="flux-anime">Flux Anime (動漫)</option>
-  <option value="flux-pro">Flux Pro (專業版)</option>
-  <option value="turbo">Turbo (極速)</option>
+  <option value="flux" selected>Flux (快速高質量)</option>
+  <option value="turbo">Turbo (超快速)</option>
   </optgroup>
-  <optgroup label="🎨 圖像編輯">
-  <option value="flux-kontext">Kontext 🎨 (1張參考圖)</option>
-  <option value="flux-kontext-pro">Kontext Pro 💎 (1張參考圖)</option>
+  <optgroup label="🎨 Kontext 系列">
+  <option value="kontext">Kontext 🎨 (上下文感知)</option>
   </optgroup>
-  <optgroup label="🎯 ZImage">
-  <option value="zimage">ZImage 🎯 (高質量)</option>
+  <optgroup label="� ZI編mage 系列">
+  <option value="zimage">Z-Image Turbo � (6B參i數)</option>
   </optgroup>
-  
   </select>
   
   <label>藝術風格 <span style="color:#9ca3af;font-size:11px">(共 39 種)</span></label>
@@ -1575,99 +1530,37 @@ const CONFIG = {
   <option value="kawaii">可愛風格 🌸</option>
   </optgroup>
   </select>
-  </div>
-  
-  <div class="box">
-  <h3>🎨 圖像參數</h3>
-  <label>尺寸預設 <span style="color:#9ca3af;font-size:11px">(共 33 種)</span></label>
+  <label>尺寸預設 <span style="color:#9ca3af;font-size:11px">(共 12 種)</span></label>
   <select id="sizePreset" onchange="applySizePreset()">
-  <optgroup label="⬜ 方形系列">
+  <optgroup label="⬜ 方形">
   <option value="square-512">方形 512px (快速測試)</option>
-  <option value="square-1k" selected>方形 1K (標準)</option>
-  <option value="square-1.5k">方形 1.5K (高清)</option>
-  <option value="square-2k">方形 2K (超清)</option>
-  <option value="square-4k">方形 4K</option>
+  <option value="square-1k" selected>方形 1K (1024×1024)</option>
+  <option value="square-2k">方形 2K (2048×2048)</option>
   </optgroup>
-  <optgroup label="📱 豎屏系列">
-  <option value="portrait-9-16">豎屏 9:16 (TikTok/Story)</option>
-  <option value="portrait-9-16-hd">豎屏 9:16 HD (1080p)</option>
-  <option value="portrait-9-16-2k">豎屏 9:16 2K</option>
-  <option value="portrait-3-4">豎屏 3:4 (Instagram)</option>
-  <option value="portrait-3-4-hd">豎屏 3:4 HD</option>
-  <option value="portrait-2-3">豎屏 2:3 (Pinterest)</option>
+  <optgroup label="📱 豎屏">
+  <option value="portrait-9-16-hd">豎屏 9:16 (1080×1920)</option>
+  <option value="portrait-3-4-hd">豎屏 3:4 (1152×1536)</option>
+  <option value="portrait-2-3">豎屏 2:3 (1024×1536)</option>
   </optgroup>
-  <optgroup label="🖥️ 橫屏系列">
-  <option value="landscape-16-9">橫屏 16:9 (YouTube)</option>
-  <option value="landscape-16-9-hd">橫屏 16:9 HD (1080p)</option>
-  <option value="landscape-16-9-2k">橫屏 16:9 2K (1440p)</option>
-  <option value="landscape-16-9-4k">橫屏 16:9 4K</option>
-  <option value="landscape-4-3">橫屏 4:3 (傳統)</option>
-  <option value="landscape-21-9">橫屏 21:9 (超寬)</option>
+  <optgroup label="🖥️ 橫屏">
+  <option value="landscape-16-9-hd">橫屏 16:9 (1920×1080)</option>
+  <option value="landscape-16-9-2k">橫屏 16:9 2K (2560×1440)</option>
+  <option value="landscape-4-3">橫屏 4:3 (1024×768)</option>
   </optgroup>
-  <optgroup label="📲 社交媒體">
-  <option value="instagram-square">Instagram 方形</option>
-  <option value="instagram-portrait">Instagram 豎屏 (4:5)</option>
-  <option value="instagram-story">Instagram Story/Reels</option>
-  <option value="facebook-cover">Facebook 封面</option>
-  <option value="twitter-header">Twitter/X 橫幅</option>
-  <option value="youtube-thumbnail">YouTube 縮圖</option>
-  <option value="linkedin-banner">LinkedIn 橫幅</option>
-  </optgroup>
-  <optgroup label="🖨️ 印刷/設計">
-  <option value="a4-portrait">A4 豎屏 (300 DPI)</option>
-  <option value="a4-landscape">A4 橫屏 (300 DPI)</option>
-  <option value="poster-24-36">海報 24x36 英吋</option>
-  </optgroup>
-  <optgroup label="🖼️ 桌布">
-  <option value="wallpaper-fhd">桌布 Full HD (1080p)</option>
-  <option value="wallpaper-2k">桌布 2K (1440p)</option>
-  <option value="wallpaper-4k">桌布 4K</option>
-  <option value="wallpaper-ultrawide">桌布 Ultra-Wide</option>
-  <option value="mobile-wallpaper">手機桌布 (iPhone)</option>
+  <optgroup label="🎯 精選">
+  <option value="wallpaper-4k">4K 超清 (3840×2160)</option>
+  <option value="instagram-square">Instagram (1080×1080)</option>
+  <option value="youtube-thumbnail">YouTube 縮圖 (1280×720)</option>
   </optgroup>
   <optgroup label="🔧 自定義">
   <option value="custom">自定義尺寸</option>
   </optgroup>
   </select>
   
-  <label>寬度: <span id="widthValue">1024</span>px</label>
-  <input type="range" id="width" min="256" max="4096" step="64" value="1024">
-  <label>高度: <span id="heightValue">1024</span>px</label>
-  <input type="range" id="height" min="256" max="4096" step="64" value="1024">
-  
-  <label>生成數量 <span style="color:#9ca3af;font-size:11px">(一次生成多張)</span></label>
-  <div style="display:flex;gap:10px;align-items:center">
-  <input type="range" id="numImages" min="1" max="4" step="1" value="1" style="flex:1" oninput="updateNumImagesDisplay()">
-  <span id="numImagesValue" style="color:#f59e0b;font-weight:700;font-size:18px;min-width:60px;text-align:center">1 張</span>
-  </div>
-  <small style="color:#9ca3af;font-size:11px;display:block;margin-top:5px">💡 多張生成使用不同 seed,生成時間會增加</small>
-  
-  <label>隨機種子 (Seed) <span style="color:#9ca3af;font-size:11px">控制圖片隨機性</span></label>
-  <div style="display:flex;gap:8px;align-items:center">
-  <input type="number" id="seedInput" placeholder="留空=隨機" min="0" max="999999" style="flex:1;font-family:monospace">
-  <button type="button" onclick="randomizeSeed()" style="width:auto;padding:10px 16px;margin:0;background:linear-gradient(135deg,#8b5cf6 0%,#7c3aed 100%)">🎲 隨機</button>
-  </div>
-  <div style="display:flex;gap:8px;margin-top:8px">
-  <button type="button" onclick="setSeed(-1)" style="width:auto;padding:8px 12px;margin:0;font-size:12px;background:rgba(139,92,246,0.2);border:1px solid #8b5cf6">自動隨機</button>
-  <button type="button" onclick="copyLastSeed()" style="width:auto;padding:8px 12px;margin:0;font-size:12px;background:rgba(16,185,129,0.2);border:1px solid #10b981">📋 複製上次</button>
-  <button type="button" onclick="clearSeed()" style="width:auto;padding:8px 12px;margin:0;font-size:12px;background:rgba(239,68,68,0.2);border:1px solid #ef4444">🗑️ 清空</button>
-  </div>
-  <small style="color:#9ca3af;font-size:11px;display:block;margin-top:5px">💡 固定 seed 可精確復現圖片,留空則每次隨機生成</small>
-  <div id="lastSeedInfo" style="display:none;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);padding:8px;border-radius:6px;margin-top:8px;font-size:12px;color:#10b981"></div>
-  
-  <label>質量模式</label>
-  <select id="qualityMode">
-  <option value="economy">⚡ 經濟</option>
-  <option value="standard" selected>⭐ 標準</option>
-  <option value="ultra">💎 超高清</option>
-  <option value="ultra_4k">💎 4K超高清</option>
-  </select>
-  
-  <button onclick="generate()">🚀 開始生成</button>
+
   </div>
   </div>
   
-  <div id="result"></div>
   </div>
   
   <div id="historyModal" class="modal">
@@ -1686,7 +1579,7 @@ const CONFIG = {
   <script>
   const PRESETS=${JSON.stringify(CONFIG.PRESET_SIZES)};
   let generationHistory=[];
-  let referenceImages=[];
+
   let lastUsedSeeds=[];
   const MAX_FILE_SIZE=10*1024*1024;
   
@@ -1737,183 +1630,41 @@ const CONFIG = {
   }
   }
   
-  document.getElementById('refImageUrl').addEventListener('keypress',function(e){
-  if(e.key==='Enter'){
-  const url=this.value.trim();
-  if(url){
-  try{
-  new URL(url);
-  const model=document.getElementById('model').value;
-  const maxRef=getMaxReferenceImages(model);
-  if(referenceImages.length>=maxRef){
-  alert('此模型最多支持 '+maxRef+' 張參考圖');
-  return;
-  }
-  referenceImages.push(url);
-  this.value='';
-  renderReferenceImages();
-  }catch{
-  alert('請輸入有效的圖片 URL');
-  }
-  }
-  }
-  });
+
   
-  document.getElementById('fileInput').addEventListener('change',async function(e){
-  await handleFiles(e.target.files);
-  this.value='';
-  });
+
   
-  const uploadArea=document.getElementById('uploadArea');
-  uploadArea.addEventListener('dragover',function(e){
-  e.preventDefault();
-  this.classList.add('dragover');
-  });
-  uploadArea.addEventListener('dragleave',function(e){
-  e.preventDefault();
-  this.classList.remove('dragover');
-  });
-  uploadArea.addEventListener('drop',async function(e){
-  e.preventDefault();
-  this.classList.remove('dragover');
-  await handleFiles(e.dataTransfer.files);
-  });
-  
-  async function handleFiles(files){
-  const model=document.getElementById('model').value;
-  const maxRef=getMaxReferenceImages(model);
-  const remaining=maxRef-referenceImages.length;
-  if(remaining<=0){
-  alert('此模型最多支持 '+maxRef+' 張參考圖');
-  return;
-  }
-  const filesToProcess=Array.from(files).slice(0,remaining);
-  for(const file of filesToProcess){
-  if(!file.type.startsWith('image/')){
-  alert(file.name+' 不是有效的圖片文件');
-  continue;
-  }
-  if(file.size>MAX_FILE_SIZE){
-  alert(file.name+' 超過 10MB 限制');
-  continue;
-  }
-  await uploadImage(file);
-  }
-  }
-  
-  async function uploadImage(file){
-  const tempId='temp-'+Date.now()+'-'+Math.random();
-  referenceImages.push({id:tempId,uploading:true});
-  renderReferenceImages();
-  try{
-  const base64=await fileToBase64(file);
-  const uploadedUrl=await uploadToImageHost(base64,file.name);
-  const index=referenceImages.findIndex(img=>img.id===tempId);
-  if(index!==-1){
-  referenceImages[index]=uploadedUrl;
-  renderReferenceImages();
-  }
-  }catch(error){
-  console.error('Upload error:',error);
-  const index=referenceImages.findIndex(img=>img.id===tempId);
-  if(index!==-1){
-  referenceImages.splice(index,1);
-  renderReferenceImages();
-  }
-  alert('上傳失敗: '+error.message);
-  }
-  }
-  
-  function fileToBase64(file){
-  return new Promise((resolve,reject)=>{
-  const reader=new FileReader();
-  reader.onload=()=>resolve(reader.result);
-  reader.onerror=reject;
-  reader.readAsDataURL(file);
-  });
-  }
-  
-  async function uploadToImageHost(base64,filename){
-  try{
-  const response=await fetch('https://api.imgur.com/3/image',{
-  method:'POST',
-  headers:{'Authorization':'Client-ID 2afc620eb108124','Content-Type':'application/json'},
-  body:JSON.stringify({image:base64.split(',')[1],type:'base64',name:filename})
-  });
-  const data=await response.json();
-  if(data.success)return data.data.link;
-  else throw new Error('Imgur upload failed');
-  }catch(imgurError){
-  console.error('Imgur failed:',imgurError);
-  try{
-  const formData=new FormData();
-  formData.append('image',base64.split(',')[1]);
-  const response=await fetch('https://api.imgbb.com/1/upload?key=d36eb6591370ae7f9089d85875e56b22',{method:'POST',body:formData});
-  const data=await response.json();
-  if(data.success)return data.data.url;
-  else throw new Error('ImgBB upload failed');
-  }catch(imgbbError){
-  console.error('ImgBB failed:',imgbbError);
-  return base64;
-  }
-  }
-  }
-  
-  function getMaxReferenceImages(model){
-  const config=${JSON.stringify(CONFIG.PROVIDERS.pollinations.models)};
-  const m=config.find(x=>x.id===model);
-  return m?.max_reference_images||0;
-  }
-  
-  function updateRefImageLimit(){
-  const model=document.getElementById('model').value;
-  const maxRef=getMaxReferenceImages(model);
-  const section=document.getElementById('refImageLimit');
-  if(maxRef>0){
-  section.textContent='此模型最多支持 '+maxRef+' 張參考圖 (已添加 '+referenceImages.length+'/'+maxRef+')';
-  section.style.color='#10b981';
-  }else{
-  section.textContent='此模型不支持參考圖';
-  section.style.color='#ef4444';
-  }
-  }
-  
-  function renderReferenceImages(){
-  const list=document.getElementById('refImageList');
-  list.innerHTML='';
-  referenceImages.forEach((item,index)=>{
-  const div=document.createElement('div');
-  div.className='ref-img-item';
-  if(typeof item==='object'&&item.uploading){
-  div.innerHTML='<div style="width:80px;height:80px;background:#2a2a2a;border-radius:8px;border:2px dashed #ec4899;display:flex;align-items:center;justify-content:center"><div class="spinner"></div></div>';
-  }else{
-  const url=typeof item==='object'?item.url:item;
-  div.innerHTML='<img src="'+url+'"><button class="ref-img-remove" onclick="removeRefImage('+index+')">×</button>';
-  }
-  list.appendChild(div);
-  });
-  updateRefImageLimit();
-  }
-  
-  function removeRefImage(index){
-  referenceImages.splice(index,1);
-  renderReferenceImages();
-  }
+
   
   function loadHistory(){
   try{
+  // 檢查localStorage是否可用
+  if(typeof(Storage) === "undefined" || !localStorage) {
+  console.warn('localStorage not available');
+  return;
+  }
   const saved=localStorage.getItem('flux_ai_history');
   if(saved){
   generationHistory=JSON.parse(saved);
   updateHistoryBadge();
   }
-  }catch(e){console.error('Load history error:',e);}
+  }catch(e){
+  console.error('Load history error:',e);
+  generationHistory = []; // 重置為空數組
+  }
   }
   
   function saveHistory(){
   try{
+  // 檢查localStorage是否可用
+  if(typeof(Storage) === "undefined" || !localStorage) {
+  console.warn('localStorage not available, cannot save history');
+  return;
+  }
   localStorage.setItem('flux_ai_history',JSON.stringify(generationHistory.slice(0,100)));
-  }catch(e){console.error('Save history error:',e);}
+  }catch(e){
+  console.error('Save history error:',e);
+  }
   }
   
   function addToHistory(item){
@@ -1964,20 +1715,35 @@ const CONFIG = {
   
   function regenFromHistory(index){
   const item=generationHistory[index];
-  document.getElementById('prompt').value=item.prompt;
-  document.getElementById('model').value=item.model;
-  document.getElementById('width').value=item.width;
-  document.getElementById('height').value=item.height;
-  document.getElementById('widthValue').textContent=item.width;
-  document.getElementById('heightValue').textContent=item.height;
-  if(item.negative_prompt)document.getElementById('negativePrompt').value=item.negative_prompt;
-  if(item.style)document.getElementById('style').value=item.style;
-  if(item.quality_mode)document.getElementById('qualityMode').value=item.quality_mode;
-  if(item.seed)document.getElementById('seedInput').value=item.seed;
-  if(item.reference_images){
-  referenceImages=item.reference_images;
-  renderReferenceImages();
+  if(!item) return;
+  
+  // 安全設置各個表單元素
+  const promptElement = document.getElementById('prompt');
+  const modelElement = document.getElementById('model');
+  const sizePresetElement = document.getElementById('sizePreset');
+  const negativePromptElement = document.getElementById('negativePrompt');
+  const styleElement = document.getElementById('style');
+  const qualityModeElement = document.getElementById('qualityMode');
+  const seedInputElement = document.getElementById('seedInput');
+  
+  if(promptElement) promptElement.value = item.prompt || '';
+  if(modelElement) modelElement.value = item.model || 'flux';
+  
+  // 根據寬度和高度找到對應的尺寸預設
+  let matchedPreset = 'square-1k'; // 默認值
+  for(const [key, preset] of Object.entries(PRESETS)){
+  if(preset.width === item.width && preset.height === item.height){
+  matchedPreset = key;
+  break;
   }
+  }
+  if(sizePresetElement) sizePresetElement.value = matchedPreset;
+  
+  if(item.negative_prompt && negativePromptElement) negativePromptElement.value = item.negative_prompt;
+  if(item.style && styleElement) styleElement.value = item.style;
+  if(item.quality_mode && qualityModeElement) qualityModeElement.value = item.quality_mode;
+  if(item.seed && seedInputElement) seedInputElement.value = item.seed;
+
   closeHistory();
   alert('已載入歷史配置 (包含 Seed),點擊生成按鈕即可精確復現!');
   }
@@ -2001,17 +1767,19 @@ const CONFIG = {
   }
   
   function applySizePreset(){
-  const preset=PRESETS[document.getElementById('sizePreset').value];
+  // 尺寸預設功能已簡化，直接在生成時使用選中的預設
+  const sizePresetElement = document.getElementById('sizePreset');
+  if(!sizePresetElement) {
+  console.error('sizePreset element not found');
+  return;
+  }
+  const preset=PRESETS[sizePresetElement.value];
   if(preset){
-  document.getElementById('width').value=preset.width;
-  document.getElementById('height').value=preset.height;
-  document.getElementById('widthValue').textContent=preset.width;
-  document.getElementById('heightValue').textContent=preset.height;
+  console.log('已選擇尺寸預設:', preset.name, preset.width + 'x' + preset.height);
   }
   }
   
-  document.getElementById('width').oninput=function(){document.getElementById('widthValue').textContent=this.value;};
-  document.getElementById('height').oninput=function(){document.getElementById('heightValue').textContent=this.value;};
+  // 寬度和高度控制器已移除，現在使用尺寸預設
   
   window.onclick=function(event){
   const modal=document.getElementById('historyModal');
@@ -2019,16 +1787,23 @@ const CONFIG = {
   };
   
   async function generate(){
-  const prompt=document.getElementById('prompt').value.trim();
-  if(!prompt){alert('請輸入提示詞');return;}
-  
-  const validRefImages=referenceImages.filter(img=>typeof img==='string'||!img.uploading);
-  if(validRefImages.length<referenceImages.length){
-  alert('請等待圖片上傳完成');
+  // 檢查必要的DOM元素是否存在
+  const promptElement = document.getElementById('prompt');
+  if(!promptElement) {
+  alert('錯誤：找不到提示詞輸入框');
   return;
   }
   
-  const seedInput=document.getElementById('seedInput').value.trim();
+  const prompt = promptElement.value.trim();
+  if(!prompt){alert('請輸入提示詞');return;}
+  
+  const seedInputElement = document.getElementById('seedInput');
+  if(!seedInputElement) {
+  alert('錯誤：找不到種子輸入框');
+  return;
+  }
+  
+  const seedInput = seedInputElement.value.trim();
   let seedValue=-1;
   if(seedInput!==''){
   const parsedSeed=parseInt(seedInput);
@@ -2040,24 +1815,41 @@ const CONFIG = {
   }
   }
   
+  // 從尺寸預設獲取寬度和高度
+  const sizePresetElement = document.getElementById('sizePreset');
+  const sizePreset = sizePresetElement ? sizePresetElement.value : 'square-1k';
+  const preset = PRESETS[sizePreset] || PRESETS['square-1k'];
+  
+  // 安全獲取其他表單元素的值
+  const negativePromptElement = document.getElementById('negativePrompt');
+  const modelElement = document.getElementById('model');
+  const styleElement = document.getElementById('style');
+  const qualityModeElement = document.getElementById('qualityMode');
+  const numImagesElement = document.getElementById('numImages');
+  
   const params={
   prompt:prompt,
-  negative_prompt:document.getElementById('negativePrompt').value,
-  model:document.getElementById('model').value,
-  style:document.getElementById('style').value,
-  width:parseInt(document.getElementById('width').value),
-  height:parseInt(document.getElementById('height').value),
-  quality_mode:document.getElementById('qualityMode').value,
-  n:parseInt(document.getElementById('numImages').value),
+  negative_prompt: negativePromptElement ? negativePromptElement.value : '',
+  model: modelElement ? modelElement.value : 'flux',
+  style: styleElement ? styleElement.value : 'none',
+  width:preset.width,
+  height:preset.height,
+  quality_mode: qualityModeElement ? qualityModeElement.value : 'standard',
+  n: numImagesElement ? parseInt(numImagesElement.value) : 1,
   seed:seedValue,
   auto_optimize:true,
-  auto_hd:true,
-  reference_images:validRefImages
+  auto_hd:true
   };
   
-  const resultDiv=document.getElementById('result');
+  const resultDiv=document.getElementById('centerPanel');
   const button=document.querySelector('button[onclick="generate()"]');
   button.disabled=true;
+  
+  // 顯示加載狀態
+  console.log('🔄 開始生成，更新UI狀態');
+  resultDiv.className='center-panel';
+  resultDiv.style.cssText = 'display:flex;justify-content:center;align-items:center;';
+  resultDiv.innerHTML='<div style="text-align:center;color:#9ca3af"><div style="font-size:48px;margin-bottom:20px">⏳</div><div style="font-size:18px;margin-bottom:10px">正在生成圖片...</div><div style="font-size:14px">請稍候,這可能需要幾秒鐘</div></div>';
   
   const startTime=Date.now();
   let timerInterval;
@@ -2086,17 +1878,112 @@ const CONFIG = {
   const usedSeeds=data.data.map(item=>item.seed);
   updateLastSeedInfo(usedSeeds);
   
-  resultDiv.innerHTML='<div style="background:rgba(16,185,129,0.15);border:1px solid #10b981;padding:16px;border-radius:12px;color:#10b981"><strong>✅ 生成成功!</strong><span class="timer">⏱️ 總時間: '+duration+' | 平均: '+avgTime+'s/張 | 共 '+numGenerated+' 張</span></div>';
+  // 清除 empty 類別並重置中心面板
+  resultDiv.className='center-panel';
+  resultDiv.style.cssText = '';
+  resultDiv.innerHTML='<div style="background:rgba(16,185,129,0.15);border:1px solid #10b981;padding:16px;border-radius:12px;color:#10b981;margin-bottom:20px;"><strong>✅ 生成成功!</strong><span class="timer">⏱️ 總時間: '+duration+' | 平均: '+avgTime+'s/張 | 共 '+numGenerated+' 張</span><div style="font-size:12px;margin-top:8px;opacity:0.8;">💡 圖片正在處理中，如果無法顯示請稍等片刻或點擊刷新按鈕</div></div>';
+  
+  console.log('🎯 中心面板已更新，準備顯示', numGenerated, '張圖片');
+  console.log('📊 API返回的數據:', data.data);
+  console.log('📦 當前中心面板狀態:', resultDiv.className, resultDiv.style.cssText);
+  
+  console.log('🎯 開始顯示', numGenerated, '張圖片');
+  console.log('📊 API返回的數據:', data.data);
   
   data.data.forEach(function(item,index){
+  console.log('顯示圖片 #' + (index+1) + ':', item.url);
+  
   const is4K=item.is_4k?'<span class="tag-4k">4K</span>':'';
   const modeTag=item.generation_mode?'<span class="tag-mode">'+item.generation_mode+'</span>':'';
   const styleTag=item.style&&item.style!=='none'?' | 風格:'+item.style:'';
-  const imgDiv=document.createElement('div');
-  imgDiv.style.marginTop='20px';
-  imgDiv.innerHTML='<div style="background:rgba(245,158,11,0.1);padding:8px;border-radius:8px 8px 0 0;color:#f59e0b;font-weight:600;display:flex;justify-content:space-between;align-items:center"><span>圖片 '+(index+1)+'/'+numGenerated+'</span><span style="font-family:monospace;font-size:12px;background:rgba(0,0,0,0.3);padding:4px 8px;border-radius:4px">Seed: '+item.seed+'</span></div><img src="'+item.url+'" style="width:100%;border-radius:0;cursor:pointer"><div class="result-meta" style="border-radius:0 0 12px 12px">'+item.model+' | '+item.width+'x'+item.height+is4K+modeTag+styleTag+' | '+item.quality_mode+'<button onclick="setSeed('+item.seed+')" style="margin-left:10px;padding:4px 10px;font-size:11px;background:rgba(139,92,246,0.3);border:1px solid #8b5cf6;color:#fff;border-radius:4px;cursor:pointer">🎲 使用此 Seed</button></div>';
-  imgDiv.querySelector('img').onclick=function(){window.open(item.url);};
-  resultDiv.appendChild(imgDiv);
+  
+  // 創建圖片容器
+  const imgContainer=document.createElement('div');
+  imgContainer.style.cssText = 'margin-top:20px;border:1px solid rgba(255,255,255,0.1);border-radius:12px;overflow:hidden;background:rgba(26,26,26,0.8);';
+  
+  // 創建標題欄
+  const titleBar=document.createElement('div');
+  titleBar.style.cssText = 'background:rgba(245,158,11,0.1);padding:12px;color:#f59e0b;font-weight:600;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.1);';
+  titleBar.innerHTML = '<span>圖片 '+(index+1)+'/'+numGenerated+'</span><span style="font-family:monospace;font-size:12px;background:rgba(0,0,0,0.3);padding:4px 8px;border-radius:4px">Seed: '+item.seed+'</span>';
+  
+  // 創建圖片容器
+  const imageWrapper=document.createElement('div');
+  imageWrapper.style.cssText = 'position:relative;background:#000;display:flex;justify-content:center;align-items:center;min-height:200px;';
+  
+  // 創建圖片元素
+  const imgElement = document.createElement('img');
+  imgElement.src = item.url;
+  imgElement.style.cssText = 'max-width:100%;max-height:80vh;height:auto;display:block;cursor:pointer;border:none;';
+  imgElement.onclick = function(){window.open(item.url,'_blank');};
+  
+  // 創建加載指示器
+  const loadingDiv = document.createElement('div');
+  loadingDiv.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#9ca3af;text-align:center;';
+  loadingDiv.innerHTML = '<div style="font-size:24px;margin-bottom:10px">⏳</div><div>圖片加載中...</div>';
+  imageWrapper.appendChild(loadingDiv);
+  
+  // 圖片加載事件 - 添加重試機制
+  let retryCount = 0;
+  const maxRetries = 5;
+  const retryDelay = 2000; // 2秒
+  
+  function loadImageWithRetry() {
+  imgElement.onload = function(){
+  console.log('✅ 圖片加載成功:', item.url, '(重試次數:', retryCount, ')');
+  loadingDiv.style.display = 'none';
+  imgElement.style.display = 'block';
+  };
+  
+  imgElement.onerror = function(){
+  retryCount++;
+  console.warn('⚠️ 圖片加載失敗，重試中...', retryCount + '/' + maxRetries, item.url);
+  
+  if (retryCount < maxRetries) {
+  loadingDiv.innerHTML = '<div style="font-size:24px;margin-bottom:10px">🔄</div><div>圖片準備中，重試 ' + retryCount + '/' + maxRetries + '</div><div style="font-size:12px;margin-top:5px;opacity:0.7;">Pollinations API 需要時間處理...</div>';
+  
+  setTimeout(() => {
+  // 添加時間戳避免緩存問題
+  const separator = item.url.includes('?') ? '&' : '?';
+  imgElement.src = item.url + separator + '_retry=' + retryCount + '&_t=' + Date.now();
+  }, retryDelay);
+  } else {
+  console.error('❌ 圖片最終加載失敗:', item.url);
+  loadingDiv.innerHTML = '<div style="color:#ef4444;font-size:20px;margin-bottom:10px">❌</div><div style="color:#ef4444;">圖片加載失敗</div><div style="font-size:12px;margin-top:8px;color:#9ca3af;">已重試 ' + maxRetries + ' 次</div><button onclick="window.open(\'' + item.url + '\')" style="margin-top:8px;padding:4px 8px;font-size:11px;background:rgba(139,92,246,0.3);border:1px solid #8b5cf6;color:#fff;border-radius:4px;cursor:pointer">🔗 直接訪問</button>';
+  imgElement.style.display = 'none';
+  }
+  };
+  
+  // 初始加載 - 添加延遲以等待API處理
+  setTimeout(() => {
+  imgElement.src = item.url;
+  }, 1000); // 延遲1秒開始加載
+  }
+  
+  loadImageWithRetry();
+  
+  // 先隱藏圖片，等加載完成後顯示
+  imgElement.style.display = 'none';
+  imageWrapper.appendChild(imgElement);
+  
+  // 將圖片元素存儲到容器中，方便刷新功能使用
+  imgContainer.setAttribute('data-image-url', item.url);
+  imgContainer.querySelector('img').setAttribute('data-original-url', item.url);
+  
+  // 創建元數據欄
+  const metaBar=document.createElement('div');
+  metaBar.className = 'result-meta';
+  metaBar.style.cssText = 'background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);padding:12px;margin:0;border-radius:0;color:#10b981;font-size:12px;border-top:none;';
+  metaBar.innerHTML = item.model+' | '+item.width+'x'+item.height+is4K+modeTag+styleTag+' | '+item.quality_mode+'<button onclick="setSeed('+item.seed+')" style="margin-left:10px;padding:4px 10px;font-size:11px;background:rgba(139,92,246,0.3);border:1px solid #8b5cf6;color:#fff;border-radius:4px;cursor:pointer">🎲 使用此 Seed</button><button onclick="refreshImage(this, \'' + item.url + '\')" style="margin-left:5px;padding:4px 10px;font-size:11px;background:rgba(16,185,129,0.3);border:1px solid #10b981;color:#fff;border-radius:4px;cursor:pointer">🔄 刷新圖片</button>';
+  
+  // 組裝容器
+  imgContainer.appendChild(titleBar);
+  imgContainer.appendChild(imageWrapper);
+  imgContainer.appendChild(metaBar);
+  
+  // 添加到結果區域
+  resultDiv.appendChild(imgContainer);
+  
+  console.log('📦 圖片容器已添加到DOM');
   
   addToHistory({
   url:item.url,
@@ -2107,8 +1994,6 @@ const CONFIG = {
   height:item.height,
   style:params.style,
   quality_mode:params.quality_mode,
-  reference_images:item.reference_images||[],
-  reference_images_count:item.reference_images_count||0,
   generation_mode:item.generation_mode||'文生圖',
   duration:avgTime+'s',
   seed:item.seed
@@ -2118,18 +2003,149 @@ const CONFIG = {
   button.textContent='🚀 開始生成';
   button.disabled=false;
   }catch(e){
+  console.error('❌ 生成過程出錯:', e);
   clearInterval(timerInterval);
-  resultDiv.innerHTML='<div style="background:rgba(239,68,68,0.15);border:1px solid #ef4444;padding:16px;border-radius:12px;color:#ef4444"><strong>❌ 生成失敗</strong><p style="margin-top:10px">'+e.message+'</p></div>';
+  resultDiv.className='center-panel';
+  resultDiv.style.cssText = 'display:flex;justify-content:center;align-items:center;';
+  resultDiv.innerHTML='<div style="background:rgba(239,68,68,0.15);border:1px solid #ef4444;padding:16px;border-radius:12px;color:#ef4444;max-width:500px;text-align:center;"><strong>❌ 生成失敗</strong><p style="margin-top:10px">'+e.message+'</p><p style="margin-top:8px;font-size:12px;opacity:0.8;">請檢查控制台獲取詳細錯誤信息</p></div>';
   button.textContent='🚀 開始生成';
   button.disabled=false;
   }
   }
   
+  // 刷新圖片功能
+  function refreshImage(button, imageUrl) {
+  console.log('🔄 手動刷新圖片:', imageUrl);
+  
+  // 找到對應的圖片容器
+  const metaBar = button.parentElement;
+  const imgContainer = metaBar.parentElement;
+  const imgElement = imgContainer.querySelector('img');
+  const imageWrapper = imgContainer.querySelector('div[style*="position:relative"]');
+  
+  // 創建新的加載指示器
+  let loadingDiv = imageWrapper.querySelector('div[style*="position:absolute"]');
+  if (!loadingDiv) {
+  loadingDiv = document.createElement('div');
+  loadingDiv.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#9ca3af;text-align:center;';
+  imageWrapper.appendChild(loadingDiv);
+  }
+  
+  // 顯示刷新狀態
+  loadingDiv.style.display = 'block';
+  loadingDiv.innerHTML = '<div style="font-size:24px;margin-bottom:10px">🔄</div><div>手動刷新中...</div>';
+  imgElement.style.display = 'none';
+  
+  // 重新加載圖片
+  imgElement.onload = function() {
+  console.log('✅ 手動刷新成功:', imageUrl);
+  loadingDiv.style.display = 'none';
+  imgElement.style.display = 'block';
+  };
+  
+  imgElement.onerror = function() {
+  console.error('❌ 手動刷新失敗:', imageUrl);
+  loadingDiv.innerHTML = '<div style="color:#ef4444;font-size:20px;margin-bottom:10px">❌</div><div style="color:#ef4444;">刷新失敗</div><button onclick="window.open(\'' + imageUrl + '\')" style="margin-top:8px;padding:4px 8px;font-size:11px;background:rgba(139,92,246,0.3);border:1px solid #8b5cf6;color:#fff;border-radius:4px;cursor:pointer">🔗 直接訪問</button>';
+  imgElement.style.display = 'none';
+  };
+  
+  // 添加時間戳避免緩存
+  const separator = imageUrl.includes('?') ? '&' : '?';
+  imgElement.src = imageUrl + separator + '_refresh=' + Date.now();
+  }
+  
+  // 測試圖片顯示功能
+  function testImageDisplay() {
+  console.log('🧪 開始測試圖片顯示功能');
+  const resultDiv = document.getElementById('centerPanel');
+  
+  // 模擬API響應數據
+  const testData = {
+  data: [{
+  url: 'https://image.pollinations.ai/prompt/a%20beautiful%20sunset?width=1024&height=1024&seed=12345&model=flux',
+  model: 'flux',
+  seed: 12345,
+  width: 1024,
+  height: 1024,
+  is_4k: false,
+  generation_mode: '測試模式',
+  style: 'none',
+  quality_mode: 'standard'
+  }]
+  };
+  
+  // 重置面板
+  resultDiv.className = 'center-panel';
+  resultDiv.style.cssText = '';
+  resultDiv.innerHTML = '<div style="background:rgba(139,92,246,0.15);border:1px solid #8b5cf6;padding:16px;border-radius:12px;color:#8b5cf6;margin-bottom:20px;"><strong>🧪 測試模式</strong><span> | 測試圖片顯示功能</span></div>';
+  
+  console.log('🎯 開始顯示測試圖片');
+  
+  testData.data.forEach(function(item, index) {
+  console.log('顯示測試圖片:', item.url);
+  
+  // 創建圖片容器
+  const imgContainer = document.createElement('div');
+  imgContainer.style.cssText = 'margin-top:20px;border:1px solid rgba(139,92,246,0.3);border-radius:12px;overflow:hidden;background:rgba(26,26,26,0.8);';
+  
+  // 創建標題欄
+  const titleBar = document.createElement('div');
+  titleBar.style.cssText = 'background:rgba(139,92,246,0.1);padding:12px;color:#8b5cf6;font-weight:600;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(139,92,246,0.2);';
+  titleBar.innerHTML = '<span>🧪 測試圖片</span><span style="font-family:monospace;font-size:12px;background:rgba(0,0,0,0.3);padding:4px 8px;border-radius:4px">Seed: ' + item.seed + '</span>';
+  
+  // 創建圖片容器
+  const imageWrapper = document.createElement('div');
+  imageWrapper.style.cssText = 'position:relative;background:#000;display:flex;justify-content:center;align-items:center;min-height:200px;';
+  
+  // 創建圖片元素
+  const imgElement = document.createElement('img');
+  imgElement.src = item.url;
+  imgElement.style.cssText = 'max-width:100%;max-height:80vh;height:auto;display:block;cursor:pointer;border:none;';
+  imgElement.onclick = function() { window.open(item.url, '_blank'); };
+  
+  // 創建加載指示器
+  const loadingDiv = document.createElement('div');
+  loadingDiv.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#9ca3af;text-align:center;';
+  loadingDiv.innerHTML = '<div style="font-size:24px;margin-bottom:10px">⏳</div><div>測試圖片加載中...</div>';
+  imageWrapper.appendChild(loadingDiv);
+  
+  // 測試圖片加載事件
+  imgElement.onload = function() {
+  console.log('✅ 測試圖片加載成功:', item.url);
+  loadingDiv.style.display = 'none';
+  imgElement.style.display = 'block';
+  };
+  
+  imgElement.onerror = function() {
+  console.error('❌ 測試圖片加載失敗:', item.url);
+  loadingDiv.innerHTML = '<div style="color:#ef4444;font-size:20px;margin-bottom:10px">❌</div><div style="color:#ef4444;">測試圖片加載失敗</div><div style="font-size:12px;margin-top:8px;color:#9ca3af;">URL: ' + item.url.substring(0, 50) + '...</div>';
+  imgElement.style.display = 'none';
+  };
+  
+  // 先隱藏圖片，等加載完成後顯示
+  imgElement.style.display = 'none';
+  imageWrapper.appendChild(imgElement);
+  
+  // 創建元數據欄
+  const metaBar = document.createElement('div');
+  metaBar.style.cssText = 'background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);padding:12px;margin:0;border-radius:0;color:#8b5cf6;font-size:12px;border-top:none;';
+  metaBar.innerHTML = '🧪 測試模式 | ' + item.model + ' | ' + item.width + 'x' + item.height + ' | ' + item.quality_mode;
+  
+  // 組裝容器
+  imgContainer.appendChild(titleBar);
+  imgContainer.appendChild(imageWrapper);
+  imgContainer.appendChild(metaBar);
+  
+  // 添加到結果區域
+  resultDiv.appendChild(imgContainer);
+  
+  console.log('📦 測試圖片容器已添加到DOM');
+  });
+  }
+  
   loadHistory();
-  updateRefImageLimit();
   </script>
   </body>
   </html>`;
     return new Response(html, { headers: corsHeaders({ 'Content-Type': 'text/html; charset=utf-8' }) });
   }
-  
